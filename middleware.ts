@@ -50,7 +50,7 @@ async function checkAuthentication(request: NextRequest): Promise<boolean> {
 
     // Get cookies from the request
     const cookieHeader = request.headers.get("cookie") || "";
-
+    console.log(cookieHeader);
     // Check if authToken exists in cookies
     const hasAuthToken = cookieHeader.includes("authToken=");
     if (!hasAuthToken) {
