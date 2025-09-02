@@ -53,6 +53,7 @@ async function checkAuthentication(request: NextRequest): Promise<boolean> {
     console.log(cookieHeader);
     // Check if authToken exists in cookies
     const hasAuthToken = cookieHeader.includes("authToken=");
+    console.log("Has auth token", hasAuthToken);
     if (!hasAuthToken) {
       return false;
     }
@@ -66,6 +67,8 @@ async function checkAuthentication(request: NextRequest): Promise<boolean> {
       credentials: "include",
     });
 
+    const d = await response.json();
+    console.log(d);
     // If token is expired or invalid, the backend will clear the cookie
     if (response.status === 401) {
       return false;
