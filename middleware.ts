@@ -17,11 +17,6 @@ export async function middleware(request: NextRequest) {
   // Check if current path is an auth route
   const isAuthRoute = authRoutes.some((route) => pathname.startsWith(route));
 
-  // Skip auth check for verify-otp page
-  if (pathname === "/verify-otp") {
-    return NextResponse.next();
-  }
-
   // Check authentication by calling backend profile endpoint
   const isAuthenticated = await checkAuthentication(request);
 
@@ -56,6 +51,12 @@ async function checkAuthentication(request: NextRequest): Promise<boolean> {
     // Get cookies from the request
     const cookieHeader = request.headers.get("cookie") || "";
 
+    // Check if authToken exists in cookies
+    const hasAuthToken = cookieHeader.includes("authToken=");
+    if (!hasAuthToken) {
+      return false;
+    }
+
     const response = await fetch(`${apiUrl}/auth/profile`, {
       method: "GET",
       headers: {
@@ -64,6 +65,12 @@ async function checkAuthentication(request: NextRequest): Promise<boolean> {
       },
       credentials: "include",
     });
+
+    // If token is expired or invalid, the backend will clear the cookie
+    if (response.status === 401) {
+      return false;
+    }
+
     return response.ok && response.status === 200;
   } catch (error) {
     console.error("Auth check failed:", error);

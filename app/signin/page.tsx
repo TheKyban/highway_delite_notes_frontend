@@ -62,7 +62,10 @@ export default function SignInPage() {
         });
 
         if (response.success) {
-          router.push("/dashboard");
+          // Add small delay to ensure cookie is set before redirect
+          setTimeout(() => {
+            router.push("/dashboard");
+          }, 100);
         }
       }
     } catch (error) {
